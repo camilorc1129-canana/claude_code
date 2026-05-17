@@ -12,14 +12,18 @@ MOCK_COURSES_LIST = [
         "name": "Curso de React",
         "description": "Aprende React desde cero",
         "thumbnail": "https://via.placeholder.com/150",
-        "slug": "curso-de-react"
+        "slug": "curso-de-react",
+        "average_rating": 4.5,
+        "total_ratings": 10
     },
     {
         "id": 2,
         "name": "Curso de Python",
         "description": "Domina Python paso a paso",
         "thumbnail": "https://via.placeholder.com/200",
-        "slug": "curso-de-python"
+        "slug": "curso-de-python",
+        "average_rating": 0.0,
+        "total_ratings": 0
     }
 ]
 
@@ -229,8 +233,8 @@ class TestContractCompliance:
         response = client.get("/courses")
         data = response.json()
         
-        expected_fields = {"id", "name", "description", "thumbnail", "slug"}
-        
+        expected_fields = {"id", "name", "description", "thumbnail", "slug", "average_rating", "total_ratings"}
+
         for course in data:
             # Verify no extra fields beyond contract
             actual_fields = set(course.keys())
@@ -262,13 +266,15 @@ class TestContractCompliance:
                 "name": "Curso de React",
                 "description": "Curso de React",
                 "thumbnail": "https://via.placeholder.com/150",
-                "slug": "curso-de-react"
+                "slug": "curso-de-react",
+                "average_rating": 4.5,
+                "total_ratings": 10
             }
         ]
-        
+
         response = client.get("/courses")
         data = response.json()
-        
+
         # Verify the response matches the exact contract structure
         assert len(data) == 1
         course = data[0]
@@ -276,4 +282,6 @@ class TestContractCompliance:
         assert course["name"] == "Curso de React"
         assert course["description"] == "Curso de React"
         assert course["thumbnail"] == "https://via.placeholder.com/150"
-        assert course["slug"] == "curso-de-react" 
+        assert course["slug"] == "curso-de-react"
+        assert course["average_rating"] == 4.5
+        assert course["total_ratings"] == 10 

@@ -1,83 +1,133 @@
-/**
- * StarRating Component
- * Componente de calificación con estrellas (modo readonly para lista de cursos)
- */
+'use client';
 
+import { useState } from 'react';
 import styles from './StarRating.module.scss';
 
 interface StarRatingProps {
-  rating: number; // 0-5, puede ser decimal
-  totalRatings?: number; // Número total de ratings
-  showCount?: boolean; // Mostrar contador de ratings
-  size?: 'small' | 'medium' | 'large'; // Tamaño visual
-  readonly?: boolean; // Modo solo lectura
-  className?: string; // Clase CSS adicional
+  rating: number;
+  onRatingChange?: (rating: number) => void;
+  totalRatings?: number;
+  showCount?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  readonly?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
-/**
- * Sub-componente: Icono de estrella con diferentes estados de relleno
- */
-interface StarIconProps {
-  fillState: 'empty' | 'half' | 'full';
-}
+const StarIcon = ({ fillState }: { fillState: 'empty' | 'half' | 'full' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="halfStarGradient">
+        <stop offset="50%" stopColor="currentColor" />
+        <stop offset="50%" stopColor="transparent" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+      fill={
+        fillState === 'full'
+          ? 'currentColor'
+          : fillState === 'half'
+          ? 'url(#halfStarGradient)'
+          : 'none'
+      }
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
-const StarIcon = ({ fillState }: StarIconProps) => {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <defs>
-        {/* Gradient para media estrella */}
-        <linearGradient id="halfStarGradient">
-          <stop offset="50%" stopColor="currentColor" />
-          <stop offset="50%" stopColor="transparent" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-        fill={
-          fillState === 'full'
-            ? 'currentColor'
-            : fillState === 'half'
-            ? 'url(#halfStarGradient)'
-            : 'none'
-        }
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-/**
- * Componente principal: StarRating
- */
 export const StarRating = ({
   rating,
+  onRatingChange,
   totalRatings = 0,
   showCount = false,
   size = 'medium',
   readonly = false,
+  disabled = false,
   className = '',
 }: StarRatingProps) => {
-  /**
-   * Determina el estado de relleno de cada estrella
-   */
-  const getStarFillState = (starIndex: number): 'empty' | 'half' | 'full' => {
-    const currentRating = Math.max(0, Math.min(5, rating)); // Clamp 0-5
+  const [hoverRating, setHoverRating] = useState<number>(0);
 
+  const isInteractive = !readonly && !!onRatingChange;
+
+  const getStarFillState = (starIndex: number): 'empty' | 'half' | 'full' => {
+    if (isInteractive && hoverRating > 0) {
+      return hoverRating >= starIndex ? 'full' : 'empty';
+    }
+    const currentRating = Math.max(0, Math.min(5, rating));
     if (currentRating >= starIndex) return 'full';
     if (currentRating >= starIndex - 0.5) return 'half';
     return 'empty';
   };
 
-  // Formatear el rating para mostrar (1 decimal)
+  const handleMouseEnter = (star: number) => {
+    if (!isInteractive || disabled) return;
+    setHoverRating(star);
+  };
+
+  const handleClick = (star: number) => {
+    if (!isInteractive || disabled) return;
+    onRatingChange!(star);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, star: number) => {
+    if (!isInteractive || disabled) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onRatingChange!(star);
+    }
+    if (event.key === 'Escape') {
+      setHoverRating(0);
+    }
+  };
+
   const formattedRating = rating.toFixed(1);
+
+  const countEl = showCount && totalRatings > 0 && (
+    <span className={styles.count} aria-label={`${totalRatings} ratings`}>
+      ({totalRatings})
+    </span>
+  );
+
+  if (isInteractive) {
+    return (
+      <div
+        className={`${styles.starRating} ${styles[size]} ${className}`}
+        role="group"
+        aria-label={`Rating: ${formattedRating} out of 5 stars${
+          showCount && totalRatings > 0 ? `, ${totalRatings} ratings` : ''
+        }`}
+        onMouseLeave={() => !disabled && setHoverRating(0)}
+      >
+        <div className={styles.stars}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              className={`${styles.star} ${styles[getStarFillState(star)]}`}
+              onClick={() => handleClick(star)}
+              onMouseEnter={() => handleMouseEnter(star)}
+              onKeyDown={(e) => handleKeyDown(e, star)}
+              disabled={disabled}
+              aria-label={`Rate ${star} stars`}
+              aria-pressed={rating === star}
+            >
+              <StarIcon fillState={getStarFillState(star)} />
+            </button>
+          ))}
+        </div>
+        {countEl}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -98,13 +148,7 @@ export const StarRating = ({
           </span>
         ))}
       </div>
-
-      {/* Contador de ratings (opcional) */}
-      {showCount && totalRatings > 0 && (
-        <span className={styles.count} aria-label={`${totalRatings} ratings`}>
-          ({totalRatings})
-        </span>
-      )}
+      {countEl}
     </div>
   );
 };

@@ -42,6 +42,14 @@ seed-fresh:
 	docker-compose exec api bash -c "cd /app && uv run python -m app.db.seed clear"
 	docker-compose exec api bash -c "cd /app && uv run python -m app.db.seed"
 
+# Ejecutar todos los tests
+test:
+	docker-compose exec api bash -c "cd /app && uv run pytest app/ -v"
+
+# Ejecutar tests con reporte de cobertura
+test-cov:
+	docker-compose exec api bash -c "cd /app && uv run pytest app/ -v --tb=short --no-header -q"
+
 # Mostrar ayuda
 help:
 	@echo "Comandos disponibles:"
@@ -55,6 +63,8 @@ help:
 	@echo "  make create-migration  - Crear una nueva migración"
 	@echo "  make seed              - Ejecutar seed de datos"
 	@echo "  make seed-fresh        - Limpiar y recrear datos de seed"
+	@echo "  make test              - Ejecutar todos los tests"
+	@echo "  make test-cov          - Ejecutar tests con output resumido"
 	@echo "  make help              - Mostrar esta ayuda"
 
 # Comando por defecto

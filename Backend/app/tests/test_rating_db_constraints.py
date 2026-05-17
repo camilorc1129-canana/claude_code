@@ -65,18 +65,15 @@ class TestRatingConstraints:
         with pytest.raises(IntegrityError, match="ck_course_ratings_rating_range"):
             db_session.commit()
 
-    @pytest.mark.skip(reason="UNIQUE constraint with NULL values requires partial index in PostgreSQL. Business logic prevents duplicates at service layer.")
     def test_unique_constraint_prevents_duplicate_active_ratings(
         self,
         db_session,
         sample_course
     ):
-        """Test UNIQUE constraint prevents multiple active ratings from same user.
+        """Test partial unique index prevents multiple active ratings from same user.
 
-        Note: In PostgreSQL, NULL != NULL, so UNIQUE(course_id, user_id, deleted_at)
-        doesn't prevent duplicates when deleted_at IS NULL.
-        This would require a PARTIAL UNIQUE INDEX instead.
-        The business logic in service layer prevents this scenario.
+        Uses a PARTIAL UNIQUE INDEX ON (course_id, user_id) WHERE deleted_at IS NULL,
+        which correctly enforces uniqueness only for active ratings in PostgreSQL.
         """
         # Arrange - Create first rating
         rating1 = CourseRating(
@@ -87,7 +84,7 @@ class TestRatingConstraints:
         db_session.add(rating1)
         db_session.commit()
 
-        # Act - Try to create duplicate
+        # Act - Try to create duplicate active rating for same user+course
         rating2 = CourseRating(
             course_id=sample_course.id,
             user_id=42,  # Same user
@@ -95,8 +92,8 @@ class TestRatingConstraints:
         )
         db_session.add(rating2)
 
-        # Assert
-        with pytest.raises(IntegrityError, match="uq_course_ratings_user_course_deleted"):
+        # Assert - partial index enforces uniqueness at DB level
+        with pytest.raises(IntegrityError, match="uix_course_ratings_active_user_course"):
             db_session.commit()
 
     def test_unique_constraint_allows_soft_deleted_duplicates(

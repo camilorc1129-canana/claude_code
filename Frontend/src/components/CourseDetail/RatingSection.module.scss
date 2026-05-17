@@ -1,0 +1,72 @@
+@import '../../styles/vars.scss';
+
+.ratingSection {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: color('off-white');
+  border-radius: 12px;
+  border: 2px solid color('light-gray');
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+.userRating {
+  flex: 1;
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: color('text-primary');
+    margin-bottom: 1rem;
+  }
+
+  .loadingText {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: color('text-secondary');
+  }
+
+  .errorText {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 45, 45, 0.08);
+    color: color('primary');
+    border-radius: 6px;
+    font-size: 0.875rem;
+    border-left: 3px solid color('primary');
+  }
+
+  .successText {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(76, 175, 80, 0.08);
+    color: #2e7d32;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    border-left: 3px solid #4caf50;
+  }
+}
+
+.statsSection {
+  flex: 1;
+
+  .statsTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: color('text-primary');
+    margin-bottom: 0.75rem;
+  }
+
+  .statsDescription {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: color('text-secondary');
+  }
+}

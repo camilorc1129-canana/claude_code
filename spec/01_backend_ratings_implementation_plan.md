@@ -2475,9 +2475,15 @@ pytest app/tests/ -v --lf
 - [x] Crear `test_course_rating_service.py` (unit tests)
 - [x] Crear `test_rating_endpoints.py` (integration tests)
 - [x] Crear `test_rating_db_constraints.py` (DB tests)
-- [x] Ejecutar tests: `pytest app/tests/ -v`
+- [x] Ejecutar tests: `pytest app/ -v`
 - [x] Verificar coverage: `pytest --cov=app`
-- [x] Todos los tests pasan ✓ (39 passed, 1 skipped)
+- [x] Todos los tests pasan ✓ (50 passed, 0 skipped)
+
+### Deuda Técnica B-7 - Contratos test_main.py ✓
+- [x] Agregar `average_rating` y `total_ratings` a `MOCK_COURSES_LIST` en `test_main.py`
+- [x] Actualizar `expected_fields` en `TestContractCompliance` para reflejar los 7 campos reales del endpoint
+- [x] Agregar assertions de los nuevos campos en `test_courses_response_data_matches_contract_examples`
+- [x] Corregir comando en `Makefile`: `pytest app/ app/tests/` → `pytest app/` (incluye `test_main.py`)
 
 ---
 

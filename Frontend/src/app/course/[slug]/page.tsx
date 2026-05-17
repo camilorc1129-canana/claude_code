@@ -21,7 +21,13 @@ async function getCourseData(slug: string): Promise<CourseDetail> {
     throw new Error("Failed to fetch course data");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return {
+    ...data,
+    average_rating: data.average_rating ?? 0,
+    total_ratings: data.total_ratings ?? 0,
+  };
 }
 
 export default async function CoursePage({ params }: CoursePageProps) {

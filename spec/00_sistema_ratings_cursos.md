@@ -454,3 +454,40 @@ describe('StarRating Component', () => {
 ---
 
 *Este plan sigue estrictamente los patrones arquitecturales existentes de Platziflix y está diseñado para ser implementado incrementalmente, manteniendo la estabilidad del sistema en cada fase.*
+
+---
+
+## ¿Cómo funciona un LLM?
+
+Un **Large Language Model (LLM)** es un modelo de inteligencia artificial entrenado para predecir la siguiente palabra más probable dado un contexto.
+
+### Ejemplo simple
+
+Dado el texto:
+
+> "El cielo es de color..."
+
+El modelo no "entiende" la pregunta — en cambio, calcula una distribución de probabilidad sobre todas las palabras posibles:
+
+| Siguiente palabra | Probabilidad |
+|---|---|
+| `azul` | 72% |
+| `gris` | 18% |
+| `rojo` | 6% |
+| `verde` | 4% |
+
+Elige la más probable → **"azul"**, y repite el proceso con el nuevo contexto: `"El cielo es de color azul..."`.
+
+### ¿Cómo aprendió eso?
+
+Durante el entrenamiento, el modelo leyó cientos de miles de millones de palabras de texto (libros, internet, código) y ajustó billones de parámetros internos para volverse cada vez mejor prediciendo la siguiente palabra.
+
+### Lo que un LLM hace en la práctica
+
+```
+Entrada (prompt) → [Modelo: 70 mil millones de parámetros] → Salida (token a token)
+```
+
+Cuando le preguntas *"¿Cómo implemento un sistema de ratings?"*, el modelo genera la respuesta **un token a la vez**, eligiendo en cada paso la continuación más probable según todo el contexto anterior.
+
+> **Clave**: Un LLM no busca en internet ni consulta una base de datos — todo su conocimiento está comprimido en sus pesos, aprendidos durante el entrenamiento.
