@@ -1,1 +1,5 @@
 *.pyc
+*.exe
+*.dmg
+*.pkg
+DockerDesktopInstaller.exe
