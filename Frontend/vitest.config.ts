@@ -5,6 +5,12 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    modules: {
+      // Keep original class names in tests so selectors like '.star' and toHaveClass('large') work
+      generateScopedName: '[local]',
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

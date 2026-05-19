@@ -150,6 +150,8 @@
   border: 2px solid color('light-gray');
   transition: all 0.2s;
   align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     transform: translateY(-2px);

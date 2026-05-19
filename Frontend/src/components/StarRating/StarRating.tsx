@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import styles from './StarRating.module.scss';
 
 interface StarRatingProps {
@@ -14,7 +14,7 @@ interface StarRatingProps {
   className?: string;
 }
 
-const StarIcon = ({ fillState }: { fillState: 'empty' | 'half' | 'full' }) => (
+const StarIcon = ({ fillState, gradientId }: { fillState: 'empty' | 'half' | 'full'; gradientId: string }) => (
   <svg
     viewBox="0 0 24 24"
     fill="none"
@@ -22,7 +22,7 @@ const StarIcon = ({ fillState }: { fillState: 'empty' | 'half' | 'full' }) => (
     aria-hidden="true"
   >
     <defs>
-      <linearGradient id="halfStarGradient">
+      <linearGradient id={gradientId}>
         <stop offset="50%" stopColor="currentColor" />
         <stop offset="50%" stopColor="transparent" />
       </linearGradient>
@@ -33,7 +33,7 @@ const StarIcon = ({ fillState }: { fillState: 'empty' | 'half' | 'full' }) => (
         fillState === 'full'
           ? 'currentColor'
           : fillState === 'half'
-          ? 'url(#halfStarGradient)'
+          ? `url(#${gradientId})`
           : 'none'
       }
       stroke="currentColor"
@@ -55,6 +55,8 @@ export const StarRating = ({
   className = '',
 }: StarRatingProps) => {
   const [hoverRating, setHoverRating] = useState<number>(0);
+  const uid = useId();
+  const gradientId = `half-star-${uid.replace(/:/g, '')}`;
 
   const isInteractive = !readonly && !!onRatingChange;
 
@@ -75,6 +77,7 @@ export const StarRating = ({
 
   const handleClick = (star: number) => {
     if (!isInteractive || disabled) return;
+    setHoverRating(0);
     onRatingChange!(star);
   };
 
@@ -101,6 +104,7 @@ export const StarRating = ({
     return (
       <div
         className={`${styles.starRating} ${styles[size]} ${className}`}
+        data-size={size}
         role="group"
         aria-label={`Rating: ${formattedRating} out of 5 stars${
           showCount && totalRatings > 0 ? `, ${totalRatings} ratings` : ''
@@ -112,6 +116,7 @@ export const StarRating = ({
             <button
               key={star}
               type="button"
+              data-testid="star"
               className={`${styles.star} ${styles[getStarFillState(star)]}`}
               onClick={() => handleClick(star)}
               onMouseEnter={() => handleMouseEnter(star)}
@@ -120,7 +125,7 @@ export const StarRating = ({
               aria-label={`Rate ${star} stars`}
               aria-pressed={rating === star}
             >
-              <StarIcon fillState={getStarFillState(star)} />
+              <StarIcon fillState={getStarFillState(star)} gradientId={gradientId} />
             </button>
           ))}
         </div>
@@ -132,6 +137,7 @@ export const StarRating = ({
   return (
     <div
       className={`${styles.starRating} ${styles[size]} ${className}`}
+      data-size={size}
       role="img"
       aria-label={`Rating: ${formattedRating} out of 5 stars${
         showCount && totalRatings > 0 ? `, ${totalRatings} ratings` : ''
@@ -141,10 +147,11 @@ export const StarRating = ({
         {[1, 2, 3, 4, 5].map((star) => (
           <span
             key={star}
+            data-testid="star"
             className={`${styles.star} ${styles[getStarFillState(star)]}`}
             aria-hidden="true"
           >
-            <StarIcon fillState={getStarFillState(star)} />
+            <StarIcon fillState={getStarFillState(star)} gradientId={gradientId} />
           </span>
         ))}
       </div>

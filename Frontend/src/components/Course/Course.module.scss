@@ -2,75 +2,126 @@
 
 .courseCard {
   background: color('white');
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-  width: 420px;
-  min-height: 420px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 380px;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s;
-  position: relative;
-  border: 2px solid color('light-gray');
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 1.5px solid color('light-gray');
+
   &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 32px color('primary-light');
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(255, 45, 45, 0.12);
     border-color: color('primary-border');
+
+    .thumbnail {
+      transform: scale(1.05);
+    }
+
+    .playOverlay {
+      opacity: 1;
+    }
   }
 }
 
 .thumbnailContainer {
   width: 100%;
-  height: 260px;
+  height: 220px;
   overflow: hidden;
-  background: color('off-white');
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: color('light-gray');
+  position: relative;
+  flex-shrink: 0;
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
-  border-bottom: 2px solid color('light-gray');
-  &:hover {
-    transform: scale(1.04);
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+// Overlay de gradiente sobre la imagen
+.thumbnailOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+// Ícono de play centrado al hacer hover
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  .playIcon {
+    width: 52px;
+    height: 52px;
+    background: color('primary');
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(255, 45, 45, 0.5);
+
+    svg {
+      width: 22px;
+      height: 22px;
+      fill: color('white');
+      margin-left: 3px;
+    }
   }
 }
 
 .courseInfo {
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .courseTitle {
-  font-size: 1.7rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: color('text-primary');
-  margin-bottom: 0.2rem;
-  line-height: 1.1;
+  line-height: 1.3;
+  margin: 0;
+
+  // Truncar a 2 líneas
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.teacher {
-  color: color('primary');
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-}
-
-.duration {
+.description {
+  font-size: 0.875rem;
   color: color('text-secondary');
-  font-size: 1rem;
-  font-weight: 500;
-  opacity: 0.7;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+
+  // Truncar a 2 líneas
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ratingContainer {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: auto;
+  padding-top: 0.875rem;
+  border-top: 1px solid color('light-gray');
 }

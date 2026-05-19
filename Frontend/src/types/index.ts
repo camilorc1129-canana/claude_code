@@ -5,12 +5,25 @@ export interface Course {
   description: string;
   thumbnail: string;
   slug: string;
-  // Campos opcionales de rating
-  average_rating?: number; // 0.0 - 5.0
-  total_ratings?: number; // Cantidad de ratings
+  average_rating?: number;
+  total_ratings?: number;
 }
 
-// Class types
+// Teacher returned inside course detail
+export interface Teacher {
+  id: number;
+  name: string;
+}
+
+// Lesson as returned by GET /courses/{slug}
+export interface Lesson {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+}
+
+// Class as returned by GET /classes/{class_id}
 export interface Class {
   id: number;
   title: string;
@@ -20,10 +33,11 @@ export interface Class {
   slug: string;
 }
 
-// Course Detail type
+// Course Detail type — matches GET /courses/{slug} API response
 export interface CourseDetail extends Course {
-  description: string;
-  classes: Class[];
+  teachers: Teacher[];
+  classes: Lesson[];
+  rating_distribution?: Record<string, number>;
 }
 
 // Progress types

@@ -39,7 +39,7 @@ describe('StarRating Component', () => {
     it('applies correct size class', () => {
       const { container } = render(<StarRating rating={3} size="large" />);
 
-      expect(container.firstChild).toHaveClass('large');
+      expect(container.firstChild).toHaveAttribute('data-size', 'large');
     });
 
     it('applies custom className', () => {
@@ -103,19 +103,19 @@ describe('StarRating Component', () => {
     it('renders small size correctly', () => {
       const { container } = render(<StarRating rating={3} size="small" />);
 
-      expect(container.firstChild).toHaveClass('small');
+      expect(container.firstChild).toHaveAttribute('data-size', 'small');
     });
 
     it('renders medium size correctly (default)', () => {
       const { container } = render(<StarRating rating={3} size="medium" />);
 
-      expect(container.firstChild).toHaveClass('medium');
+      expect(container.firstChild).toHaveAttribute('data-size', 'medium');
     });
 
     it('renders large size correctly', () => {
       const { container } = render(<StarRating rating={3} size="large" />);
 
-      expect(container.firstChild).toHaveClass('large');
+      expect(container.firstChild).toHaveAttribute('data-size', 'large');
     });
   });
 
@@ -134,10 +134,9 @@ describe('StarRating Component', () => {
     });
 
     it('renders all 5 stars', () => {
-      const { container } = render(<StarRating rating={3} />);
+      render(<StarRating rating={3} />);
 
-      // Verificar que hay exactamente 5 elementos star
-      const stars = container.querySelectorAll('.star');
+      const stars = screen.getAllByTestId('star');
       expect(stars).toHaveLength(5);
     });
   });
@@ -160,11 +159,12 @@ describe('StarRating Component', () => {
     });
 
     it('stars have aria-hidden attribute', () => {
-      const { container } = render(<StarRating rating={3} />);
+      render(<StarRating rating={3} />);
 
-      const stars = container.querySelectorAll('.star svg');
+      const stars = screen.getAllByTestId('star');
       stars.forEach((star) => {
-        expect(star).toHaveAttribute('aria-hidden', 'true');
+        const svg = star.querySelector('svg');
+        expect(svg).toHaveAttribute('aria-hidden', 'true');
       });
     });
   });

@@ -1,12 +1,12 @@
 @import '../../styles/vars.scss';
 
 .ratingSection {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  padding: 2rem;
-  background: color('off-white');
-  border-radius: 12px;
-  border: 2px solid color('light-gray');
+  margin: 2.5rem 0;
+  padding: 2rem 2.5rem;
+  background: color('white');
+  border-radius: 16px;
+  border: 1.5px solid color('light-gray');
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   display: flex;
   gap: 3rem;
   align-items: flex-start;
@@ -14,17 +14,27 @@
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 2rem;
+    padding: 1.5rem;
   }
 }
+
+// ─── Lado izquierdo: calificar ──────────────────────────────────────────────
 
 .userRating {
   flex: 1;
 
   .title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: color('text-primary');
     margin-bottom: 1rem;
+  }
+
+  .currentRatingHint {
+    margin-top: 0.6rem;
+    font-size: 0.875rem;
+    color: color('text-secondary');
+    opacity: 0.8;
   }
 
   .loadingText {
@@ -54,19 +64,87 @@
   }
 }
 
+// ─── Lado derecho: stats globales ───────────────────────────────────────────
+
 .statsSection {
-  flex: 1;
+  flex: 1.2;
 
   .statsTitle {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: color('text-primary');
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
   }
+}
 
-  .statsDescription {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: color('text-secondary');
-  }
+// Fila con número grande + estrellas
+.statsOverview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.bigScore {
+  font-size: 3rem;
+  font-weight: 900;
+  color: color('text-primary');
+  line-height: 1;
+}
+
+.statsOverviewRight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.statsDescription {
+  font-size: 0.85rem;
+  color: color('text-secondary');
+  margin: 0;
+}
+
+// ─── Distribución de estrellas ───────────────────────────────────────────────
+
+.distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.distRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.distLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: color('text-secondary');
+  width: 2rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.distBarTrack {
+  flex: 1;
+  height: 8px;
+  background: color('light-gray');
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.distBarFill {
+  height: 100%;
+  background: #ffc107;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.distCount {
+  font-size: 0.8rem;
+  color: color('text-secondary');
+  width: 1.5rem;
+  flex-shrink: 0;
 }

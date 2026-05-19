@@ -1,5 +1,4 @@
-import { renderToString } from "react-dom/server";
-import { startTransition } from "react";
+import { render, screen } from "@testing-library/react";
 import ClassPage from "./page";
 import { Class } from "@/types";
 import { describe, it, expect, vi } from "vitest";
@@ -12,7 +11,6 @@ vi.mock("@/components/VideoPlayer/VideoPlayer", () => ({
   ),
 }));
 
-// Mock de fetch que resuelve inmediatamente
 global.fetch = vi.fn().mockResolvedValue({
   ok: true,
   json: () =>
@@ -28,11 +26,13 @@ global.fetch = vi.fn().mockResolvedValue({
 
 describe("ClassPage", () => {
   it("renders class info and video", async () => {
-    const html = await renderToString(<ClassPage params={{ class_id: "19" }} />);
+    // Call async server component directly, then render the resulting JSX
+    const jsx = await ClassPage({ params: Promise.resolve({ class_id: "19" }) });
+    render(jsx);
 
-    expect(html).toContain("Clase de Test");
-    expect(html).toContain("Descripción de la clase de test");
-    expect(html).toContain("mock-video-player");
-    expect(html).toContain("Regresar al curso");
-  }, 10000); // Aumentamos el timeout a 10 segundos
+    expect(screen.getByText("Clase de Test")).toBeInTheDocument();
+    expect(screen.getByText("Descripción de la clase de test")).toBeInTheDocument();
+    expect(screen.getByTestId("mock-video-player")).toBeInTheDocument();
+    expect(screen.getByText(/Regresar al curso/)).toBeInTheDocument();
+  });
 });

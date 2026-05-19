@@ -16,12 +16,20 @@ export const Course = ({
     <article className={styles.courseCard}>
       <div className={styles.thumbnailContainer}>
         <img src={thumbnail} alt={name} className={styles.thumbnail} />
+        <div className={styles.thumbnailOverlay} />
+        <div className={styles.playOverlay}>
+          <div className={styles.playIcon}>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
       </div>
+
       <div className={styles.courseInfo}>
         <h2 className={styles.courseTitle}>{name}</h2>
         <p className={styles.description}>{description}</p>
 
-        {/* Rating Section - solo mostrar si existe average_rating */}
         {typeof average_rating === 'number' && (
           <div className={styles.ratingContainer}>
             <StarRating

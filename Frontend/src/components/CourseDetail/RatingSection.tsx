@@ -10,6 +10,7 @@ interface RatingSectionProps {
   courseId: number;
   initialAverageRating?: number;
   initialTotalRatings?: number;
+  initialDistribution?: Record<string, number>;
   userId?: number;
 }
 
@@ -28,16 +29,45 @@ function calculateNewAverage(
   return (currentAverage * currentTotal - oldRating + newRating) / currentTotal;
 }
 
+function DistributionBar({
+  star,
+  count,
+  total,
+}: {
+  star: number;
+  count: number;
+  total: number;
+}) {
+  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+  return (
+    <div className={styles.distRow}>
+      <span className={styles.distLabel}>{star}★</span>
+      <div className={styles.distBarTrack}>
+        <div className={styles.distBarFill} style={{ width: `${pct}%` }} />
+      </div>
+      <span className={styles.distCount}>{count}</span>
+    </div>
+  );
+}
+
 export const RatingSection = ({
   courseId,
   initialAverageRating = 0,
   initialTotalRatings = 0,
+  initialDistribution,
   userId = 1,
 }: RatingSectionProps) => {
   const [existingRating, setExistingRating] = useState<CourseRating | null>(null);
   const [userRatingValue, setUserRatingValue] = useState<number>(0);
   const [averageRating, setAverageRating] = useState(initialAverageRating);
   const [totalRatings, setTotalRatings] = useState(initialTotalRatings);
+  const [distribution, setDistribution] = useState(() =>
+    initialDistribution
+      ? Object.entries(initialDistribution)
+          .map(([star, count]) => ({ star: Number(star), count }))
+          .sort((a, b) => b.star - a.star)
+      : []
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -51,7 +81,7 @@ export const RatingSection = ({
           setUserRatingValue(rating.rating);
         }
       } catch {
-        // Not critical — user just starts with no rating pre-filled
+        // Not critical — user starts with no rating pre-filled
       }
     };
 
@@ -92,6 +122,22 @@ export const RatingSection = ({
       setExistingRating(result);
       setSuccessMessage('Rating guardado');
       setTimeout(() => setSuccessMessage(null), 3000);
+
+      // Refresh stats from API to get accurate average, total and distribution
+      try {
+        const freshStats = await ratingsApi.getRatingStats(courseId);
+        setAverageRating(freshStats.average_rating);
+        setTotalRatings(freshStats.total_ratings);
+        if (freshStats.rating_distribution) {
+          setDistribution(
+            Object.entries(freshStats.rating_distribution)
+              .map(([star, count]) => ({ star: Number(star), count }))
+              .sort((a, b) => b.star - a.star)
+          );
+        }
+      } catch {
+        // Stats refresh failed silently — optimistic values remain displayed
+      }
     } catch (err) {
       // Rollback on failure
       setExistingRating(previousRatingObj);
@@ -112,6 +158,7 @@ export const RatingSection = ({
 
   return (
     <section className={styles.ratingSection}>
+      {/* Izquierda: calificar */}
       <div className={styles.userRating}>
         <h3 className={styles.title}>Califica este curso</h3>
         <StarRating
@@ -120,7 +167,10 @@ export const RatingSection = ({
           size="large"
           disabled={isLoading}
         />
-        {isLoading && <p className={styles.loadingText}>Guardando...</p>}
+        {userRatingValue > 0 && !isLoading && !error && !successMessage && (
+          <p className={styles.currentRatingHint}>Tu calificación: {userRatingValue} / 5</p>
+        )}
+        {isLoading && <p className={styles.loadingText}>Guardando…</p>}
         {error && (
           <p className={styles.errorText} role="alert">
             {error}
@@ -133,19 +183,37 @@ export const RatingSection = ({
         )}
       </div>
 
+      {/* Derecha: stats globales */}
       <div className={styles.statsSection}>
-        <h4 className={styles.statsTitle}>Rating general</h4>
-        <StarRating
-          rating={averageRating}
-          readonly={true}
-          size="medium"
-          showCount={true}
-          totalRatings={totalRatings}
-        />
-        <p className={styles.statsDescription}>
-          Basado en {totalRatings}{' '}
-          {totalRatings === 1 ? 'valoración' : 'valoraciones'}
-        </p>
+        <h4 className={styles.statsTitle}>Rating del curso</h4>
+
+        <div className={styles.statsOverview}>
+          <span className={styles.bigScore}>{averageRating.toFixed(1)}</span>
+          <div className={styles.statsOverviewRight}>
+            <StarRating
+              rating={averageRating}
+              readonly={true}
+              size="medium"
+              showCount={false}
+            />
+            <p className={styles.statsDescription}>
+              {totalRatings} {totalRatings === 1 ? 'valoración' : 'valoraciones'}
+            </p>
+          </div>
+        </div>
+
+        {distribution.length > 0 && (
+          <div className={styles.distribution}>
+            {distribution.map(({ star, count }) => (
+              <DistributionBar
+                key={star}
+                star={star}
+                count={count}
+                total={totalRatings}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

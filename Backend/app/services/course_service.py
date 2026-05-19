@@ -25,7 +25,7 @@ class CourseService:
             List of course dictionaries with: id, name, description, thumbnail, slug,
             average_rating, total_ratings
         """
-        courses = self.db.query(Course).filter(Course.deleted_at.is_(None)).all()
+        courses = self.db.query(Course).filter(Course.deleted_at.is_(None)).order_by(Course.id.asc()).all()
 
         result = []
         for course in courses:
@@ -92,7 +92,7 @@ class CourseService:
             "description": course.description,
             "thumbnail": course.thumbnail,
             "slug": course.slug,
-            "teacher_id": [teacher.id for teacher in course.teachers],
+            "teachers": [{"id": teacher.id, "name": teacher.name} for teacher in course.teachers],
             "classes": [
                 {
                     "id": lesson.id,
