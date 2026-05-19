@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Platzi Flix",
   description: "Platzi Flix curso de Cursor IDE por Platzi",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
